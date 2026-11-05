@@ -1,0 +1,7 @@
+/private/
+/node_modules/
+*.db
+*.sqlite*
+*.zip
+*.log
+.env*
