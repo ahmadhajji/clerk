@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clerk examples: recognising psoriasis and pityriasis rosea</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f3ee; color: #153c39; font-family: Arial, Helvetica, sans-serif; }
+    main { max-width: 1200px; margin: auto; padding: 52px; }
+    header { display: flex; align-items: center; gap: 18px; margin-bottom: 35px; }
+    .mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 17px; background: #153c39; color: #e0edb5; font-size: 38px; font-weight: 700; }
+    .name { font-size: 36px; font-weight: 700; letter-spacing: -1.5px; }
+    .label { margin-left: auto; color: #516864; font-size: 20px; }
+    h1 { margin: 0 0 30px; font-size: 43px; letter-spacing: -1.4px; }
+    article { padding: 30px 32px; border-radius: 20px; background: #fff; border: 1px solid #d3dbd2; margin-bottom: 22px; }
+    .prompt { font-size: 28px; line-height: 1.4; margin: 0 0 23px; }
+    .small { display: block; margin-bottom: 10px; color: #59726c; font-size: 17px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .answer { font-size: 26px; line-height: 1.5; margin: 0; }
+    .sequence { margin: 0 0 18px; display: flex; align-items: center; gap: 17px; font-size: 26px; font-weight: 700; }
+    .sequence span { flex: 1; padding: 20px; border-radius: 12px; background: #e6edda; }
+    .sequence b { font-size: 28px; }
+    .hint { margin: 18px 0 0; padding-top: 18px; border-top: 1px solid #e2e7de; color: #50685f; font-size: 22px; line-height: 1.45; }
+    aside { padding: 21px 26px; background: #153c39; color: #f1f4df; border-radius: 16px; font-size: 23px; line-height: 1.45; }
+    footer { margin-top: 27px; color: #566b66; font-size: 18px; line-height: 1.6; }
+    footer strong { color: #204b42; }
+    @media (max-width: 650px) { main { padding: 24px; } .label { display: none; } h1 { font-size: 34px; } .sequence { flex-direction: column; align-items: stretch; } .sequence b { text-align: center; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><span class="mark">c</span><span class="name">Clerk</span><span class="label">A clinical study companion</span></header>
+    <h1>Learn the pattern you are looking for.</h1>
+    <article>
+      <p class="prompt"><span class="small">You ask</span>How do I recognise plaque psoriasis?</p>
+      <p class="answer"><strong>Clearly defined, raised plaques with thick silvery scale.</strong><br>Look at the elbows, knees, scalp, and lower back.<br>Nail findings can support the diagnosis.</p>
+      <p class="hint">The original answer included a source photograph and local citations.</p>
+    </article>
+    <article>
+      <p class="prompt"><span class="small">You ask</span>How would I recognise pityriasis rosea?</p>
+      <div class="sequence"><span>A larger<br>herald patch</span><b>→</b><span>Smaller oval,<br>scaly patches</span><b>→</b><span>Along skin lines<br>of the trunk</span></div>
+      <p class="answer">The herald patch can be absent or go unnoticed.</p>
+      <p class="hint">The original answer displayed two inspected figures from the source archives.</p>
+    </article>
+    <aside>Original medical photographs stay in your private library.<br>These public examples show shortened answer text only.</aside>
+    <footer><strong>AMBOSS · UWorld · UpToDate</strong> and separately cited external references.<br>Adapted from real chats, November 5, 2026. Licensed photographs and private citations omitted.</footer>
+  </main>
+</body>
+</html>
