@@ -1,0 +1,54 @@
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
+import { Library } from './library.js';
+import { source } from './archives.js';
+
+const args = process.argv.slice(2);
+const command = args.shift();
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+function option(name: string, fallback: string): string {
+  const index = args.indexOf(name);
+  if (index < 0) return fallback;
+  const value = args[index + 1];
+  if (!value || value.startsWith('--')) throw new Error(`Missing ${name} value`);
+  args.splice(index, 2);
+  return value;
+}
+function bounded(value: string, max: number): number {
+  const result = Number(value);
+  if (!Number.isInteger(result) || result < 0 || result > max) throw new Error(`Expected integer 0..${max}`);
+  return result;
+}
+async function main(): Promise<void> {
+  if (!command || command === 'help' || command === '--help') {
+    process.stdout.write('MedLibrary, local snapshot retrieval\n\npnpm med ingest [--source amboss|uworld|uptodate]\npnpm med search "key terms" [--source all|amboss|uworld|uptodate] [--limit 3] [--mode all|any|phrase]\npnpm med open <passage-id> [--context 1]\npnpm med verify <passage-id>\npnpm med stats\npnpm med audit\n\nSearch all uses the limit per library. Open writes a private citation file with surrounding passages.\n');
+    return;
+  }
+  if (!['ingest','search','open','verify','stats','audit'].includes(command)) throw new Error(`Unknown command ${command}`);
+  const selected = option('--source','all');
+  const lib = new Library(root, command === 'ingest');
+  try {
+    let result: object;
+    switch (command) {
+      case 'ingest': await lib.ingest(selected === 'all' ? undefined : source(selected)); result = lib.stats(); break;
+      case 'stats': result = lib.stats(); break;
+      case 'audit': result = await lib.audit(); break;
+      case 'search': {
+        const limit = bounded(option('--limit','3'),20);
+        const mode = option('--mode','all');
+        if (!['all','any','phrase'].includes(mode)) throw new Error('Mode must be all, any, or phrase');
+        result = lib.search(args.join(' '), selected === 'all' ? 'all' : source(selected),limit,mode === 'all' ? 'all' : mode === 'any' ? 'any' : 'phrase');
+        break;
+      }
+      case 'open': {
+        const radius = bounded(option('--context','1'),3);
+        if (args.length !== 1 || !args[0]) throw new Error('Supply one passage ID');
+        result = lib.show(args[0],radius); break;
+      }
+      case 'verify': if (args.length !== 1 || !args[0]) throw new Error('Supply one passage ID'); result = await lib.verify(args[0]); break;
+      default: throw new Error('Unsupported command');
+    }
+    process.stdout.write(JSON.stringify(result,null,2) + '\n');
+  } finally { lib.close(); }
+}
+main().catch((error: unknown) => { process.stderr.write((error instanceof Error ? error.message : String(error)) + '\n'); process.exitCode = 1; });
