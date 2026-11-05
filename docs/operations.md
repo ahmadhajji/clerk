@@ -17,6 +17,7 @@ pnpm med stats
 pnpm med search "SIADH volume" --source all
 pnpm med open 'PASSAGE_ID' --context 1
 pnpm med verify 'PASSAGE_ID'
+pnpm med media 'PASSAGE_ID' --kind image --scope section --limit 3
 pnpm med audit
 ```
 
@@ -38,6 +39,16 @@ Supported content is HTML in database article rows, readable `Graphics.imageHtml
 Article provenance includes source, real document title, database table and primary key or HTML member, archive/member identity, archive SHA-256, full HTML SHA-256, original document path, explicit canonical/og:url when present, section/anchor, and available labeled update/publication dates verbatim. No article URL is inferred from an ID, slug, media URL, bibliography, or filename. Placeholder dates are discarded; ambiguous date ordering remains unnormalized. Archive labels such as `amboss-2025` and `March-2026` remain provenance, not asserted article dates.
 
 Search is SQLite FTS5 with Porter stemming and weighted titles/sections. It is lexical, so abbreviations and synonyms may require additional queries. A search across all libraries returns a bounded set from each library. A citation file is a selected passage plus neighbors, not a full-article export. `verify` re-parses the source and compares the document hash, passage text, section, and anchor. `audit` rehashes archive bytes and runs SQLite integrity checks.
+
+## Natural questions and source visuals
+
+`AGENTS.md` now explicitly makes retrieval, verification, internal source comparison, citations, and useful visual selection the assistant's default work. The user can ask an ordinary medical question without naming libraries or output formats. `.agents/skills/medlibrary/SKILL.md` carries the evidence procedure; `.agents/skills/medlibrary-visuals/SKILL.md` carries the visual procedure. Both are discoverable project-local skills, with no global behavior changes.
+
+The `media` command reads the exact copied source document behind a passage, checks its HTML hash, and discovers its image references, linked UpToDate graphic rows, and inline tables. It resolves AMBOSS and UWorld relative references to actual ZIP members, decodes UpToDate embedded graphic bytes, and writes only selected originals into owner-only `private/media/`. No reindex or bulk image extraction is required. Missing or ambiguous members and unsupported active formats remain unavailable. The command makes no network calls and never executes source JavaScript. Image file extensions come from actual JPEG, PNG, GIF, or WebP signatures, rather than trusting a misleading filename.
+
+Use `--scope section` first, then `--scope document` if the relevant figure is elsewhere in the same article. `--kind image`, `--kind table`, or `--kind all` limits candidates. The default limit is three, with a maximum of five. Output preserves the figure's real title or locator, caption when present, section, source document hash, archive hash, exact member or graphic-row identity, image SHA-256, and a local provenance citation. Extracted files and provenance receipts are content-addressed to preserve earlier references. The assistant inspects an image before including its exact Markdown embed in T3.
+
+Source tables are selectable Markdown excerpts capped at 20 rows, 12 columns, and about 7,000 characters. Merged cells are expanded with labels preserved and reported; excerpts report truncation. The assistant can also build a small cited comparison table from verified passages. These are two distinct forms of evidence: an extracted source table and an original synthesis. Pixel content remains outside the text index. No OCR index or audio/video transcription is provided.
 
 ## Research record
 

@@ -150,7 +150,7 @@ export class Library {
       members: this.db.prepare('SELECT source,status,count(*) AS count FROM members GROUP BY source,status').all(),
       passages: this.db.prepare('SELECT d.source,count(*) AS count FROM passages p JOIN documents d ON p.doc_id=d.id GROUP BY d.source').all(),
       failures: this.db.prepare("SELECT source,id,title,failure FROM documents WHERE status='failed' UNION ALL SELECT source,member,member,reason FROM members WHERE status='failed'").all(),
-      limitation: 'Local archive snapshots. Unknown dates remain unknown. Readable text only; media excluded. Imported content is sent to the authenticated agent provider when passages are read in T3.',
+      limitation: 'Local archive snapshots. Unknown dates remain unknown. Text is indexed; original source images and tables can be opened on demand. No audiovisual transcription or OCR index. Imported content is sent to the authenticated agent provider when read in T3.',
     };
   }
   search(query: string, selected: Source | 'all' = 'all', limit = 3, mode: 'all' | 'any' | 'phrase' = 'all'): object {
@@ -191,10 +191,8 @@ export class Library {
     const citation = `[${String(doc.source).toUpperCase()}: ${String(doc.title).replace(/[\[\]]/g,'')} — ${String(selected.section).replace(/[\[\]]/g,'')}](${path}:${selectedLine})`;
     return { id, provenance: doc, passages: neighbors, path, selectedLine, citation };
   }
-  async verify(id: string): Promise<object> {
-    const passage = this.db.prepare('SELECT * FROM passages WHERE id=?').get(id);
-    if (!passage) throw new Error('Unknown passage');
-    const doc = this.db.prepare('SELECT * FROM documents WHERE id=?').get(str(passage,'doc_id'));
+  async readDocument(id: string): Promise<{ document: Row; html: string }> {
+    const doc = this.db.prepare('SELECT * FROM documents WHERE id=?').get(id);
     if (!doc) throw new Error('Missing document');
     const archive = this.db.prepare('SELECT * FROM archives WHERE source=?').get(str(doc,'source'));
     if (!archive) throw new Error('Missing archive');
@@ -210,10 +208,17 @@ export class Library {
         html = row && typeof row.html === 'string' ? row.html : null;
       } finally { db.close(); }
     }
-    const contentMatches = html !== null && digest(html) === doc.html_hash;
+    if (html === null) throw new Error('Source document unavailable');
+    return { document: doc, html };
+  }
+  async verify(id: string): Promise<object> {
+    const passage = this.db.prepare('SELECT * FROM passages WHERE id=?').get(id);
+    if (!passage) throw new Error('Unknown passage');
+    const { document: doc, html } = await this.readDocument(str(passage,'doc_id'));
+    const contentMatches = digest(html) === doc.html_hash;
     const chunk = html === null ? undefined : chunkSections(parseHtml(html).sections)[num(passage,'part') - 1];
     const passageMatches = chunk !== undefined && chunk.text === passage.text && chunk.section === passage.section && chunk.anchor === passage.anchor;
-    return { id, contentMatches, passageMatches, verified: contentMatches && passageMatches, archiveHash: archive.hash, note: 'Compared passage and full document hash to the copied archive database/member. Archive hash is recorded at ingestion; use audit to rehash archive bytes.' };
+    return { id, contentMatches, passageMatches, verified: contentMatches && passageMatches, archiveHash: doc.archive_hash, note: 'Compared passage and full document hash to the copied archive database/member. Archive hash is recorded at ingestion; use audit to rehash archive bytes.' };
   }
   async audit(): Promise<object> {
     const archives: object[] = [];
