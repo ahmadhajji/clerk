@@ -1,0 +1,24 @@
+{
+  "name": "medlibrary",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "med": "tsx src/cli.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm typecheck && pnpm test",
+    "verify:real": "tsx scripts/verify-real.ts"
+  },
+  "dependencies": {
+    "htmlparser2": "10.0.0",
+    "yauzl": "3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.0",
+    "@types/yauzl": "2.10.3",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3"
+  }
+}
