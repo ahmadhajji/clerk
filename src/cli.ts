@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
 import { Library } from './library.js';
 import { source } from './archives.js';
+import { media } from './media.js';
 
 const args = process.argv.slice(2);
 const command = args.shift();
@@ -21,10 +22,10 @@ function bounded(value: string, max: number): number {
 }
 async function main(): Promise<void> {
   if (!command || command === 'help' || command === '--help') {
-    process.stdout.write('MedLibrary, local snapshot retrieval\n\npnpm med ingest [--source amboss|uworld|uptodate]\npnpm med search "key terms" [--source all|amboss|uworld|uptodate] [--limit 3] [--mode all|any|phrase]\npnpm med open <passage-id> [--context 1]\npnpm med verify <passage-id>\npnpm med stats\npnpm med audit\n\nSearch all uses the limit per library. Open writes a private citation file with surrounding passages.\n');
+    process.stdout.write('MedLibrary, local snapshot retrieval\n\npnpm med ingest [--source amboss|uworld|uptodate]\npnpm med search "key terms" [--source all|amboss|uworld|uptodate] [--limit 3] [--mode all|any|phrase]\npnpm med open <passage-id> [--context 1]\npnpm med verify <passage-id>\npnpm med media <passage-id> [--scope section|document] [--kind all|image|table] [--limit 3]\npnpm med stats\npnpm med audit\n\nSearch all uses the limit per library. Open writes a private citation file with surrounding passages.\n');
     return;
   }
-  if (!['ingest','search','open','verify','stats','audit'].includes(command)) throw new Error(`Unknown command ${command}`);
+  if (!['ingest','search','open','verify','stats','audit','media'].includes(command)) throw new Error(`Unknown command ${command}`);
   const selected = option('--source','all');
   const lib = new Library(root, command === 'ingest');
   try {
@@ -46,6 +47,14 @@ async function main(): Promise<void> {
         result = lib.show(args[0],radius); break;
       }
       case 'verify': if (args.length !== 1 || !args[0]) throw new Error('Supply one passage ID'); result = await lib.verify(args[0]); break;
+      case 'media': {
+        const limit=bounded(option('--limit','3'),5);
+        const scope=option('--scope','section'); const kind=option('--kind','all');
+        if(scope!=='section' && scope!=='document') throw new Error('Scope must be section or document');
+        if(kind!=='all' && kind!=='image' && kind!=='table') throw new Error('Kind must be all, image, or table');
+        if(args.length!==1 || !args[0]) throw new Error('Supply one passage ID');
+        result=await media(lib,args[0],{limit,scope,kind}); break;
+      }
       default: throw new Error('Unsupported command');
     }
     process.stdout.write(JSON.stringify(result,null,2) + '\n');
