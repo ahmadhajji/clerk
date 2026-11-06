@@ -1,18 +1,23 @@
 # Clerk
 
-### A clinical study companion. Your agent, your model, your medical libraries.
+## Quick start
 
-Ask the question you would ask a friend on the ward. Clerk helps your AI agent search your medical references, explain the answer, and show you where it came from.
+Open the [ChatGPT desktop app](https://learn.chatgpt.com/docs/quickstart), choose **Codex**, and create a **new local project** in an empty folder. Paste this:
 
-> "I always mix up nephritic and nephrotic syndrome."
->
-> "How would I recognise pityriasis rosea?"
->
-> "Why can potassium be high in DKA if the patient is losing potassium?"
+```text
+Set up https://github.com/ahmadhajji/clerk in this project folder.
+Follow its AGENTS.md and docs/agent-install.md. Install the requirements,
+download and prepare all three libraries, and verify search and citations.
+Tell me when I can start studying.
+```
 
-No special prompt to memorise. No need to ask for citations every time. The project instructions tell your agent to retrieve evidence, compare the available libraries, and choose a useful table or source image when it helps.
+**Your agent handles the rest:** it downloads Clerk, installs the required tools, downloads AMBOSS, UWorld, and UpToDate, puts the files in the right place, and prepares and checks the library. You can start chatting when it says setup is ready.
 
-[Get started](#get-started-without-coding) · [Human setup guide](docs/getting-started.md) · [Agent setup guide](docs/agent-install.md) · [Example answers](#see-it-in-action)
+You do not need to download or move any library files yourself. The agent's first setup downloads about 2.7 GiB, so keep the app open and allow time for it to finish. If a system installer needs your clicks, the agent will guide you.
+
+Already use another local agent? Paste the same message there. No GitHub account or extra model API key is needed; your AI app's usual model access and charges apply.
+
+[Detailed setup guide](docs/getting-started.md) · [Agent instructions](docs/agent-install.md) · [Example answers](#see-it-in-action)
 
 ## The AMBOSS GPT alternative for multi-library study
 
@@ -48,7 +53,7 @@ The original dermatology answers also displayed photographs from the source arch
 
 ## Use the agent you already like
 
-Clerk is designed to be **harness agnostic and model agnostic**. That means it is not tied to one AI app or model provider. ChatGPT desktop is simply the beginner tutorial below.
+Clerk is designed to be **harness agnostic and model agnostic**. That means it is not tied to one AI app or model provider. ChatGPT desktop is simply the beginner tutorial above.
 
 Codex, Claude Code, OpenCode, T3 Code, Hermes, and other local agents can use the same files and commands when configured to load the instructions. A desktop app such as ChatGPT or Claude needs a mode that can access the folder and run local commands. An ordinary chat with uploaded files alone cannot run the search tool.
 
@@ -59,30 +64,6 @@ Your agent needs to:
 - Run local commands such as `pnpm med search` and read the returned evidence.
 
 Apps differ in instruction discovery and image display. If yours uses a different instruction file, ask it to read `AGENTS.md` and the linked skills. The observed end-to-end trials used T3 Code with Codex on Linux; the other clients are portability paths, not a tested compatibility matrix.
-
-## Get started without coding
-
-**The medical libraries are provided.** The AMBOSS, UWorld, and UpToDate archive files are attached to this repository's [library release](https://github.com/ahmadhajji/clerk/releases/tag/library-snapshots-v1). Download the small project ZIP first; your agent downloads the libraries automatically during setup and checks their identities. You do not need to find or supply separate archives. The library download is about **2.7 GiB**.
-
-You also need a computer, an AI app that can work with local folders and commands, and access to a model through that app. Your app's usual plan, usage limits, and charges still apply. Clerk itself needs no additional API key or hosted backend.
-
-1. **Download this folder.** [Download ZIP](https://github.com/ahmadhajji/clerk/archive/refs/heads/main.zip), or click the green **Code** button near the top of the repository and choose **Download ZIP**.
-2. **Extract the ZIP.** On a Mac, double-click it. On Windows, right-click it and choose **Extract All**. Move the extracted folder somewhere you will keep it, such as Documents.
-3. **Open it in ChatGPT desktop.** Sign in, choose **Codex**, and add or open a **local project** using the extracted folder. Select the folder containing `AGENTS.md` and `package.json`. If you already created a project, use **Edit project → Add folder** and make this folder primary. [Official desktop setup](https://learn.chatgpt.com/docs/quickstart) · [Local projects](https://learn.chatgpt.com/docs/projects#use-local-projects-for-folders-and-codebases).
-4. **Let the agent set it up.** Start a chat in that folder and paste the message below. It will check the required tools, download the provided libraries, and build the search index. If a system installer needs your clicks, it will guide you.
-5. **Start studying after setup passes.** Ask a question in the same project. For another topic, start another chat inside that project.
-
-```text
-Set up Clerk in this folder for me. Read AGENTS.md and docs/agent-install.md,
-then follow the setup guide. Check the required tools and download the
-provided medical libraries. Keep downloaded and generated files private.
-Verify that search and source citations work before telling me it is ready.
-Explain any steps I need to do in plain English.
-```
-
-You do not need Git, a GitHub account, or coding experience for the ZIP route. The project and library downloads are public. First-time setup downloads the libraries and builds a local search index, so it takes longer than opening a normal chat. Afterward, ask your medical question directly.
-
-**Already have an agent?** Open this folder with it and paste the same setup message. **Prefer to install by hand?** Follow the [step-by-step human guide](docs/getting-started.md), including the manual commands and common fixes.
 
 ## Try your first question
 
