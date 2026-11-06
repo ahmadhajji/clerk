@@ -42,7 +42,7 @@ The agent searched all three libraries, checked supporting passages, and display
 
 ![Two Clerk trial examples: recognising plaque psoriasis and following the herald-patch-to-smaller-patches pattern in pityriasis rosea.](docs/assets/skin-recognition.png)
 
-The original dermatology answers also displayed photographs from the private source archives. Those licensed images stay out of this repository. In your own chat, the agent can show the original images available in your compatible archives. The trials also used separately cited external clinical references where helpful.
+The original dermatology answers also displayed photographs from the source archives. These public example cards omit the source photographs. In your own chat, the agent can show the original images available in the provided archives. The trials also used separately cited external clinical references where helpful.
 
 [Read the accessible text versions and example provenance](docs/examples.md) · [Read the trial and verification record](docs/natural-chat-validation.md)
 
@@ -62,25 +62,25 @@ Apps differ in instruction discovery and image display. If yours uses a differen
 
 ## Get started without coding
 
-**Before you download:** the repository includes the tool and instructions, **not the medical libraries**. You need compatible local archive files that you are allowed to use. An AMBOSS, UWorld, or UpToDate subscription alone does not supply these files, and Clerk does not download content from those services. [See supported archive formats](docs/getting-started.md#bring-your-medical-libraries).
+**The medical libraries are provided.** The AMBOSS, UWorld, and UpToDate archive files are attached to this repository's [library release](https://github.com/ahmadhajji/clerk/releases/tag/library-snapshots-v1). Download the small project ZIP first; your agent downloads the libraries automatically during setup and checks their identities. You do not need to find or supply separate archives. The library download is about **2.7 GiB**.
 
 You also need a computer, an AI app that can work with local folders and commands, and access to a model through that app. Your app's usual plan, usage limits, and charges still apply. Clerk itself needs no additional API key or hosted backend.
 
 1. **Download this folder.** [Download ZIP](https://github.com/ahmadhajji/clerk/archive/refs/heads/main.zip), or click the green **Code** button near the top of the repository and choose **Download ZIP**.
 2. **Extract the ZIP.** On a Mac, double-click it. On Windows, right-click it and choose **Extract All**. Move the extracted folder somewhere you will keep it, such as Documents.
 3. **Open it in ChatGPT desktop.** Sign in, choose **Codex**, and add or open a **local project** using the extracted folder. Select the folder containing `AGENTS.md` and `package.json`. If you already created a project, use **Edit project → Add folder** and make this folder primary. [Official desktop setup](https://learn.chatgpt.com/docs/quickstart) · [Local projects](https://learn.chatgpt.com/docs/projects#use-local-projects-for-folders-and-codebases).
-4. **Let the agent set it up.** Start a chat in that folder and paste the message below. It will check the required tools and explain where to put your library files. If a system installer needs your clicks, it will guide you.
+4. **Let the agent set it up.** Start a chat in that folder and paste the message below. It will check the required tools, download the provided libraries, and build the search index. If a system installer needs your clicks, it will guide you.
 5. **Start studying after setup passes.** Ask a question in the same project. For another topic, start another chat inside that project.
 
 ```text
 Set up Clerk in this folder for me. Read AGENTS.md and docs/agent-install.md,
-then follow the setup guide. Check the required tools and help me add my
-compatible medical archive files. Keep all imported content private.
+then follow the setup guide. Check the required tools and download the
+provided medical libraries. Keep downloaded and generated files private.
 Verify that search and source citations work before telling me it is ready.
 Explain any steps I need to do in plain English.
 ```
 
-You do not need Git, a GitHub account, or coding experience for the ZIP route. First-time setup installs dependencies and builds a local search index, so it takes longer than opening a normal chat. Afterward, ask your medical question directly.
+You do not need Git or coding experience for the ZIP route. First-time setup downloads the libraries and builds a local search index, so it takes longer than opening a normal chat. While the repository is private, release downloads require authorized GitHub access; [the setup guide explains this](docs/getting-started.md#private-repository-downloads). Afterward, ask your medical question directly.
 
 **Already have an agent?** Open this folder with it and paste the same setup message. **Prefer to install by hand?** Follow the [step-by-step human guide](docs/getting-started.md), including the manual commands and common fixes.
 
@@ -96,7 +96,7 @@ The default is to search every available library. You can narrow the sources, as
 
 ## What stays on your computer
 
-Archives, the search index, citations, and extracted source images live in the ignored `private/` folder. Building and searching the index makes no model or embedding API calls.
+The downloaded archives, search index, citations, and extracted source images live in the ignored `private/` folder. The provided archive originals are hosted in the repository's library release. Building and searching the index makes no model or embedding API calls.
 
 **The passages and images your agent reads are included in its conversation with your chosen AI provider.** This is local retrieval, not an entirely offline AI system. Do not add identifiable patient information to study chats.
 

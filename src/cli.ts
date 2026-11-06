@@ -3,6 +3,7 @@ import { resolve, dirname } from 'node:path';
 import { Library } from './library.js';
 import { source } from './archives.js';
 import { media } from './media.js';
+import { downloadLibraries, LIBRARY_ASSETS } from './downloads.js';
 
 const args = process.argv.slice(2);
 const command = args.shift();
@@ -22,11 +23,19 @@ function bounded(value: string, max: number): number {
 }
 async function main(): Promise<void> {
   if (!command || command === 'help' || command === '--help') {
-    process.stdout.write('MedLibrary, local snapshot retrieval\n\npnpm med ingest [--source amboss|uworld|uptodate]\npnpm med search "key terms" [--source all|amboss|uworld|uptodate] [--limit 3] [--mode all|any|phrase]\npnpm med open <passage-id> [--context 1]\npnpm med verify <passage-id>\npnpm med media <passage-id> [--scope section|document] [--kind all|image|table] [--limit 3]\npnpm med stats\npnpm med audit\n\nSearch all uses the limit per library. Open writes a private citation file with surrounding passages.\n');
+    process.stdout.write('Clerk, local snapshot retrieval\n\npnpm med download [--source amboss|uworld|uptodate]\npnpm med ingest [--source amboss|uworld|uptodate]\npnpm med search "key terms" [--source all|amboss|uworld|uptodate] [--limit 3] [--mode all|any|phrase]\npnpm med open <passage-id> [--context 1]\npnpm med verify <passage-id>\npnpm med media <passage-id> [--scope section|document] [--kind all|image|table] [--limit 3]\npnpm med stats\npnpm med audit\n\nDownload obtains the pinned library release and checks file sizes and SHA-256.\nSearch all uses the limit per library. Open writes a private citation file with surrounding passages.\n');
     return;
   }
-  if (!['ingest','search','open','verify','stats','audit','media'].includes(command)) throw new Error(`Unknown command ${command}`);
+  if (!['download','ingest','search','open','verify','stats','audit','media'].includes(command)) throw new Error(`Unknown command ${command}`);
   const selected = option('--source','all');
+  if (command === 'download') {
+    const selectedSource = selected === 'all' ? 'all' : source(selected);
+    if (args.length !== 0) throw new Error('Download accepts only --source');
+    const assets = LIBRARY_ASSETS.filter(asset => selectedSource === 'all' || asset.source === selectedSource);
+    const archives = await downloadLibraries({ root, assets, onProgress: message => process.stderr.write(message + '\n') });
+    process.stdout.write(JSON.stringify({ archives }, null, 2) + '\n');
+    return;
+  }
   const lib = new Library(root, command === 'ingest');
   try {
     let result: object;
