@@ -80,7 +80,7 @@ Verify that search and source citations work before telling me it is ready.
 Explain any steps I need to do in plain English.
 ```
 
-You do not need Git or coding experience for the ZIP route. First-time setup downloads the libraries and builds a local search index, so it takes longer than opening a normal chat. While the repository is private, release downloads require authorized GitHub access; [the setup guide explains this](docs/getting-started.md#private-repository-downloads). Afterward, ask your medical question directly.
+You do not need Git, a GitHub account, or coding experience for the ZIP route. The project and library downloads are public. First-time setup downloads the libraries and builds a local search index, so it takes longer than opening a normal chat. Afterward, ask your medical question directly.
 
 **Already have an agent?** Open this folder with it and paste the same setup message. **Prefer to install by hand?** Follow the [step-by-step human guide](docs/getting-started.md), including the manual commands and common fixes.
 

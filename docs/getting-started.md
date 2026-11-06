@@ -47,7 +47,7 @@ Verify that search and source citations work before telling me it is ready.
 Explain any steps I need to do in plain English.
 ```
 
-The agent checks Node.js and pnpm, installs the project's dependencies, downloads the provided libraries, and builds a search index. If you need to install a system tool yourself, it should give you the relevant steps for your computer.
+The agent checks Node.js, pnpm, and the Python 3 prerequisite for the included verification tests. It installs the project's dependencies, downloads the provided libraries, and builds a search index. If you need to install a system tool yourself, it should give you the relevant steps for your computer.
 
 ## The medical libraries are included
 
@@ -69,16 +69,7 @@ All three libraries are the default. To save download space, you can choose one 
 
 Keep the downloaded ZIPs in place; source verification and image retrieval still need them. Do not attach extracted source images, citation text, or additional archive copies to issues or PRs.
 
-### Private repository downloads
-
-While this repository is private, the release files require authorized GitHub access. An anonymous download may report HTTP 404 even when you can see the release while signed in. Your agent can use an already authenticated GitHub CLI:
-
-```sh
-gh release download library-snapshots-v1 --repo ahmadhajji/clerk --pattern '*.zip' --dir private/archives
-pnpm med download
-```
-
-The second command verifies the downloaded copies against the pinned identities without downloading them again. Do not use `--clobber` or replace existing files to bypass a mismatch. If your account lacks repository access, setup is not ready; ask the owner for access. A public repository with a published public library release can use the ordinary download command without GitHub authentication.
+The project ZIP and provided library downloads are public. You do not need a GitHub account, GitHub CLI, or download token. The setup message gives your agent permission to fetch them directly.
 
 ## 4. Let setup finish
 
@@ -106,7 +97,7 @@ For your next topic, start a new chat in the same project. Keep the folder and `
 
 Skip this section if the agent is doing setup. These are shell commands for macOS or Linux, run from the extracted folder. The end-to-end maintainer trials ran on Linux with Node.js **22.22.2** and pnpm **11.25.0**. Native Windows installation has not been validated; use an agent to handle Windows paths and commands, or use a configured WSL2 environment with the Linux steps.
 
-1. Install Node.js 22.22.2 from [Node.js](https://nodejs.org/en/download) or use your existing Node 22 environment with built-in `node:sqlite` support. Pinning the tested version avoids uncertainty about older Node releases.
+1. Install Node.js 22.22.2 from [Node.js](https://nodejs.org/en/download) or use your existing Node 22 environment with built-in `node:sqlite` support. Pinning the tested version avoids uncertainty about older Node releases. Also install Python 3 if `python3 --version` is unavailable; the included tests use it to create small synthetic ZIP files. Medical retrieval itself runs in Node.
 2. Install the pinned pnpm version if it is absent:
 
    ```sh
@@ -118,6 +109,7 @@ Skip this section if the agent is doing setup. These are shell commands for macO
    ```sh
    node --version
    pnpm --version
+   python3 --version
    pnpm install --frozen-lockfile
    pnpm check
    mkdir -p private/archives
@@ -156,9 +148,10 @@ Skip this section if the agent is doing setup. These are shell commands for macO
 | The agent cannot run commands | Switch to a local agent mode with a terminal, such as Codex in ChatGPT desktop. |
 | `pnpm` or `node` is not found | Ask the agent to check installation and restart the app after installing the tools. |
 | `node:sqlite` is unavailable | Use the tested Node version. An older Node installation may still be first on the command path. |
+| A test reports that `python3` is missing | Install Python 3 and confirm `python3 --version` works, then rerun `pnpm check`. |
 | `Index missing. Run pnpm med ingest first.` | Finish library download and the selected import during setup. Do not repeatedly ingest during medical chats. |
 | An archive is missing | Run `pnpm med download` during setup, or check the name and location of an optional manual copy. |
-| A release download reports HTTP 404 | Check [private repository access](#private-repository-downloads). Do not report setup as ready without the files. |
+| A release download reports HTTP 404 | Check that the [library release](https://github.com/ahmadhajji/clerk/releases/tag/library-snapshots-v1) and the named file are available. The provided files need no login. Report a missing file to the owner and do not call setup ready. |
 | An existing file differs from the pinned release | Keep it intact. Use it as a custom compatible snapshot, or explicitly move it aside before downloading the provided version. |
 | `Missing SQLite member` or a schema error | The archive does not match the supported layout. Do not just rename it. |
 | The answer has no citations | Ask the agent to read `AGENTS.md` and follow the medical evidence skill. Confirm that setup passed. |

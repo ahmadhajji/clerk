@@ -8,6 +8,7 @@ Clerk is a local retrieval CLI plus project instructions and skills. It makes no
 
 - Read `AGENTS.md` and `docs/getting-started.md`. Confirm the selected folder is the project root.
 - Check the OS, `node --version`, and `pnpm --version`. The observed Linux setup used Node 22.22.2 and pnpm 11.25.0. The runtime needs Node's built-in `node:sqlite`; older Node releases are not sufficient.
+- Check `python3 --version` before running the test suite. The existing retrieval/media fixtures execute `python3` to create synthetic ZIP files. If it is missing, install Python 3 within the setup authorization or guide the user through that prerequisite. Do not skip or rewrite failing tests. Medical retrieval does not require Python.
 - Follow `packageManager` in `package.json`. If a prerequisite is missing, install it within the user's authorization or guide the user through the system installer. Do not change their default shell, bypass permissions, or replace a working global runtime without explaining the need.
 - Run `pnpm install --frozen-lockfile`, then `pnpm check`. Do not rewrite the lockfile to get past a setup failure.
 - Check available disk space against the supplied archives. The maintainer's complete import used about 7.9 GiB; this is an example, not a universal capacity requirement.
@@ -20,7 +21,7 @@ The owner requested that the three archive copies be distributed with the reposi
 
 The command creates `private/archives/`, streams each download, and verifies its exact byte size and SHA-256 before installing it. It reuses matching existing files. It refuses to overwrite a different existing snapshot; explain that choice and preserve the file. `src/downloads.ts` holds the pinned release and archive identities. To install just one source, use `pnpm med download --source amboss`, `--source uworld`, or `--source uptodate`.
 
-While the repository is private, anonymous release URLs return HTTP 404. If `gh` is already authenticated with an authorized account, use `gh release download library-snapshots-v1 --repo ahmadhajji/clerk --pattern '*.zip' --dir private/archives`, then rerun `pnpm med download` to verify the copies. Never use `--clobber`. If access is unavailable, explain the access gap rather than asking the user to supply replacement archives or telling them setup passed. Do not extract or print credentials.
+The provided release and its files are public. Do not ask the user to sign into GitHub, install GitHub CLI, or provide a token for the default download. If a URL returns HTTP 404, check the pinned release and filename, preserve existing files, and report the missing download. Do not ask the user to supply replacement archives or tell them setup passed. Do not extract or print credentials.
 
 Keep owner-only access where the OS supports it. Never use an external repository as a mutable source or destination. Keep all downloaded copies, extracts, indexes, citation files, logs, and imported media under this project's ignored `private/` directory. The authorized repository release assets are separate from Git commits; do not commit binary archives or derived content.
 
