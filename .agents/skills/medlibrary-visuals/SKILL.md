@@ -5,7 +5,7 @@ description: Choose and show useful original medical images, source tables, or c
 
 # Medical visuals
 
-Use this skill automatically when a visual would make the medical answer easier to understand. Start with relevant passages opened through the `medlibrary` skill. Work from `/home/ahmad/GitHub/medlibrary` and use only the local archive copies.
+Use this skill automatically when a visual would make the medical answer easier to understand. Start with relevant passages opened through the `medlibrary` skill. Work from the current project root, the folder containing `AGENTS.md` and `package.json`, and use only its local archive copies. Use the host agent's image viewer and supported display format; T3 examples below are one supported route. If the host cannot inspect or display an image, report that limitation and use the supported text evidence.
 
 1. Decide what the visual should explain: a spatial relationship, characteristic appearance, discriminating findings, a mechanism, or a sequence. For distinctions across conditions, a small cited comparison table may be clearest. For anatomy, morphology, or imaging, look for an original source image.
 

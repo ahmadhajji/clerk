@@ -5,7 +5,7 @@ description: Answer natural medical questions with local AMBOSS, UWorld, and UpT
 
 # Medical evidence workflow
 
-Run from `/home/ahmad/GitHub/medlibrary`. Use the CLI through the shell; no extra MCP registration or API key is needed.
+Run from the current project root, the folder containing `AGENTS.md` and `package.json`. Use the CLI through the host agent's shell; no extra MCP registration or API key is needed. If the index or compatible archives are missing during setup, follow `docs/agent-install.md`. Do not import or repair an index during ordinary medical chat without a corresponding user request.
 
 The user supplies the medical question. Retrieval, source comparison, citations, and useful visuals are your default responsibilities. A question such as "I always confuse nephritic and nephrotic syndrome" needs no additional workflow instructions.
 
