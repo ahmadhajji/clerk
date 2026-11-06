@@ -13,6 +13,7 @@ The initial host inspection found Node 22.22.2, pnpm 11.25.0, Python 3, unzip, p
 ```sh
 pnpm install --frozen-lockfile
 pnpm check
+pnpm med download
 pnpm med stats
 pnpm med search "SIADH volume" --source all
 pnpm med open 'PASSAGE_ID' --context 1
@@ -22,6 +23,16 @@ pnpm med audit
 ```
 
 Node's built-in SQLite module is experimental in Node 22 and emits a warning. The lockfile pins the TypeScript tooling and HTML/ZIP parsers. esbuild's installation script is allowed only in this workspace's `pnpm-workspace.yaml`. No global agent or MCP settings are needed.
+
+## Repository library release
+
+At the owner's request, the three copied source ZIPs are attached to the private repository's `library-snapshots-v1` release. `src/downloads.ts` pins their filenames, byte sizes, SHA-256 identities, and download URLs. This supplements the original private-copy custody described above. The original archives include source media; generated indexes, database extracts, citation text, and separately extracted figures remain outside Git and release assets.
+
+The three ZIPs total 2,849,747,967 bytes. Each exceeds GitHub's 100 MiB regular-file limit, and their combined size exceeds the 2 GiB per-release-asset limit. Individual archive assets fit. GitHub [recommends releases for large downloads](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), with [no total release-size or download-bandwidth limit](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases). The small source-code ZIP therefore remains separate; setup obtains the library assets automatically.
+
+`pnpm med download` does not ingest, change an index, or call a model. It streams one archive at a time into a private temporary directory, checks the byte count and hash, and installs the complete file without overwriting an existing file. Matching copies are reused, different existing snapshots are preserved with an error, and failed downloads are removed. A concurrent downloader can only install the same verified snapshot or fail visibly. A retry after a failed download starts that file again; it does not redownload completed matching files.
+
+The repository is private during preparation. Its anonymous release URLs are unavailable without access; the setup guide documents authenticated `gh release download` followed by local verification. Public distribution is a separate action from attaching files to this private repository.
 
 ## Ingestion
 

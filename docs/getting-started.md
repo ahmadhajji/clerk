@@ -6,7 +6,7 @@ You do not need to write code. The easiest route is to open the folder in an AI 
 
 - A computer with room for the archives and search index. The maintainer's three-library import used about 7.9 GiB; leave extra space for installation and temporary files. Your archive sizes may differ.
 - An AI agent with access to local files and command execution. ChatGPT desktop's Codex mode is the tutorial route. Another capable local agent can do the same setup.
-- Compatible medical archive files you are allowed to use. They are not in the download.
+- About 2.7 GiB of download capacity for the three provided medical libraries. Your agent obtains them from this repository's library release.
 - Internet access to install the app and software dependencies and to use a hosted AI model.
 
 No extra model API key, embedding service, or database account is required by Clerk. Your chosen AI app provides model access under its own terms and limits.
@@ -41,19 +41,21 @@ Copy this whole message into the chat:
 
 ```text
 Set up Clerk in this folder for me. Read AGENTS.md and docs/agent-install.md,
-then follow the setup guide. Check the required tools and help me add my
-compatible medical archive files. Keep all imported content private.
+then follow the setup guide. Check the required tools and download the
+provided medical libraries. Keep downloaded and generated files private.
 Verify that search and source citations work before telling me it is ready.
 Explain any steps I need to do in plain English.
 ```
 
-The agent checks Node.js and pnpm, installs the project's dependencies, and asks where your compatible archive files are. If you need to install a system tool yourself, it should give you the relevant steps for your computer.
+The agent checks Node.js and pnpm, installs the project's dependencies, downloads the provided libraries, and builds a search index. If you need to install a system tool yourself, it should give you the relevant steps for your computer.
 
-## Bring your medical libraries
+## The medical libraries are included
 
-Clerk supports specific archive layouts, not arbitrary PDFs, subscription logins, or every ZIP with a similar name. It does not scrape the publishers or export their websites. A subscription alone does not provide these files. If you do not have compatible archives, stop here: the tool can be installed, but source-backed medical chat is not ready.
+The three archive files are attached to the repository's [library release](https://github.com/ahmadhajji/clerk/releases/tag/library-snapshots-v1). You do not have to obtain them elsewhere. The source-code ZIP contains the instructions and retrieval tool; setup downloads the large archive files separately with `pnpm med download`. It does not scrape or log in to the publishers' websites.
 
-Place the library ZIPs, still zipped, inside `private/archives/` in the extracted project folder. Create those folders if they do not exist, or ask your agent to create them. This is separate from extracting the project ZIP in step 1.
+The command puts them in `private/archives/`, verifies each file's byte size and SHA-256 hash, and reuses a matching existing file. Interrupted or corrupt downloads do not become installed archives. A different existing archive is preserved and reported rather than silently overwritten.
+
+If you prefer to download them yourself, use the release assets with these filenames and put them, still zipped, in `private/archives/`. You can also use compatible archives you already have, but that is optional. Do not extract the library ZIPs by hand.
 
 | Library | Filename inside `private/archives/` | Required database member inside that ZIP |
 | --- | --- | --- |
@@ -63,9 +65,20 @@ Place the library ZIPs, still zipped, inside `private/archives/` in the extracte
 
 The databases must also match the supported tables and columns. Merely renaming an unrelated ZIP will not make it compatible. The agent should inspect [the adapters](../src/archives.ts) and [operations guide](operations.md) if the layout differs, then report the mismatch rather than modifying the importer during installation.
 
-You can start with one supported library. The setup guide tells your agent how to import only that source and report the reduced coverage. With all three available, the default is to search and compare all three.
+All three libraries are the default. To save download space, you can choose one supported library with `pnpm med download --source amboss`, `--source uworld`, or `--source uptodate`, then import only that source. The agent should report the reduced coverage.
 
-Keep a copy of your original archives. Do not upload archives, extracted source images, or generated citation files to GitHub.
+Keep the downloaded ZIPs in place; source verification and image retrieval still need them. Do not attach extracted source images, citation text, or additional archive copies to issues or PRs.
+
+### Private repository downloads
+
+While this repository is private, the release files require authorized GitHub access. An anonymous download may report HTTP 404 even when you can see the release while signed in. Your agent can use an already authenticated GitHub CLI:
+
+```sh
+gh release download library-snapshots-v1 --repo ahmadhajji/clerk --pattern '*.zip' --dir private/archives
+pnpm med download
+```
+
+The second command verifies the downloaded copies against the pinned identities without downloading them again. Do not use `--clobber` or replace existing files to bypass a mismatch. If your account lacks repository access, setup is not ready; ask the owner for access. A public repository with a published public library release can use the ordinary download command without GitHub authentication.
 
 ## 4. Let setup finish
 
@@ -111,15 +124,16 @@ Skip this section if the agent is doing setup. These are shell commands for macO
    chmod 700 private private/archives
    ```
 
-4. Copy your compatible ZIPs into `private/archives/`. Import all three only if all three are present:
+4. Download the provided libraries, then import them:
 
    ```sh
+   pnpm med download
    pnpm med ingest
    pnpm med stats
    pnpm med audit
    ```
 
-   With only one library, replace the ingest command with `pnpm med ingest --source amboss`, `--source uworld`, or `--source uptodate`. Run one import at a time. Keep the archives and extracted databases after indexing: verification and image retrieval still need them.
+   To use only one library, add the same `--source amboss`, `--source uworld`, or `--source uptodate` to both the download and ingest commands. If you already have different compatible archives, skip the pinned download and import your own copies explicitly. Run one import at a time. Keep the archives and extracted databases after indexing: verification and image retrieval still need them.
 
 5. In `stats`, check that each selected archive has a non-null `completed` value and indexed passages. Read the `failures` array. In `audit`, expect SQLite integrity `ok` and `matches: true` for each imported archive. Investigate failures rather than treating a completed scan as full coverage.
 6. Try a search, then use an actual returned passage ID in the next two commands:
@@ -142,8 +156,10 @@ Skip this section if the agent is doing setup. These are shell commands for macO
 | The agent cannot run commands | Switch to a local agent mode with a terminal, such as Codex in ChatGPT desktop. |
 | `pnpm` or `node` is not found | Ask the agent to check installation and restart the app after installing the tools. |
 | `node:sqlite` is unavailable | Use the tested Node version. An older Node installation may still be first on the command path. |
-| `Index missing. Run pnpm med ingest first.` | Supply compatible archives, then finish the selected import. Do not repeatedly ingest during medical chats. |
-| An archive is missing | Check its exact name and location. Import only the sources you actually have. |
+| `Index missing. Run pnpm med ingest first.` | Finish library download and the selected import during setup. Do not repeatedly ingest during medical chats. |
+| An archive is missing | Run `pnpm med download` during setup, or check the name and location of an optional manual copy. |
+| A release download reports HTTP 404 | Check [private repository access](#private-repository-downloads). Do not report setup as ready without the files. |
+| An existing file differs from the pinned release | Keep it intact. Use it as a custom compatible snapshot, or explicitly move it aside before downloading the provided version. |
 | `Missing SQLite member` or a schema error | The archive does not match the supported layout. Do not just rename it. |
 | The answer has no citations | Ask the agent to read `AGENTS.md` and follow the medical evidence skill. Confirm that setup passed. |
 | An image does not appear | The asset may be missing, unsupported, or not displayed by your app. Ask for the available evidence and a text explanation. |
